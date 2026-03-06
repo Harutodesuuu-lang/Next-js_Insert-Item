@@ -21,7 +21,6 @@ export default function Dashboard() {
     <main>
       <h1>HIIIIIII</h1>
       <Link href={"/photos/1"}> Go to photo</Link>
-      <ProductForm />
     </main>
   );
 }

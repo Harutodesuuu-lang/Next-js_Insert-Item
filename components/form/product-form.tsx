@@ -5,6 +5,8 @@ import {
   FieldLabel,
   FieldError,
 } from "@/components/ui/field";
+
+import { toast } from "sonner";
 import {
   InputGroup,
   InputGroupInput,
@@ -96,27 +98,35 @@ export default function ProductForm() {
     // //call insert product to api function
     // const resp = await insertProduct(mockProduct);
     // console.log("after insert product:---", resp);
-    const files = values.images!;
-    const filesArray = Array.from(files);
-    const uploaded = await Promise.all(
-      filesArray.map((f) => uploadImageToServer(f)),
-    );
-    const imageUrls = uploaded.map((u) => u.location);
+    try {
+      const files = values.images!;
+      const filesArray = Array.from(files);
 
-    const payload: ProductRequest = {
-      title: values.title,
-      price: values.price,
-      description: values.description ?? "",
-      categoryId: values.categoryId,
-      images: imageUrls,
-    };
-    const created = await InsertProducts(payload);
-    console.log("Created product:", created);
-    alert(JSON.stringify(created, null, 2));
-    form.reset();
-    setFileInputKey((current) => current + 1);
+      const uploaded = await Promise.all(
+        filesArray.map((f) => uploadImageToServer(f)),
+      );
+
+      const imageUrls = uploaded.map((u) => u.location);
+
+      const payload: ProductRequest = {
+        title: values.title,
+        price: values.price,
+        description: values.description ?? "",
+        categoryId: values.categoryId,
+        images: imageUrls,
+      };
+
+      const created = await InsertProducts(payload);
+
+      alert("Product uploaded successfully!");
+
+      form.reset();
+      setFileInputKey((current) => current + 1);
+    } catch (err: any) {
+      alert("Failed to upload product because the items is already exis ");
+      console.error(err);
+    }
   }
-
   function onReset() {
     form.reset();
     form.clearErrors();
@@ -145,6 +155,7 @@ export default function ProductForm() {
                 placeholder="Macbook Pro 16 inch"
                 type="text"
                 {...field}
+                className=" border-gray-400"
               />
 
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -162,6 +173,7 @@ export default function ProductForm() {
               <FieldLabel className="flex w-auto!">Price</FieldLabel>
 
               <Input
+                className=" border-gray-400"
                 key="number-input-0"
                 placeholder="2000 USD"
                 type="number"
@@ -185,6 +197,7 @@ export default function ProductForm() {
               </FieldLabel>
 
               <Textarea
+                className=" border-gray-400"
                 key="textarea-0"
                 id="textarea-0"
                 placeholder="Product Description"
@@ -211,7 +224,7 @@ export default function ProductForm() {
                 name={field.name}
                 onValueChange={field.onChange}
               >
-                <SelectTrigger className="w-full ">
+                <SelectTrigger className="w-full  border-gray-400">
                   <SelectValue placeholder="Please Choose Category" />
                 </SelectTrigger>
                 <SelectContent>
@@ -238,6 +251,7 @@ export default function ProductForm() {
               <FieldLabel className="flex w-auto!">Choose Images</FieldLabel>
 
               <Input
+                className=" border-gray-400"
                 key={setFileInputKey}
                 type="file"
                 multiple
@@ -291,7 +305,7 @@ export default function ProductForm() {
                 key="reset-button-0"
                 id="reset"
                 name=""
-                className="w-full"
+                className="w-full  border-gray-400"
                 type="reset"
                 variant="outline"
               >
@@ -305,10 +319,4 @@ export default function ProductForm() {
       </div>
     </form>
   );
-}
-function setFileInputKey(arg0: (current: any) => any) {
-  throw new Error("Function not implemented.");
-}
-function setCategories(data: any) {
-  throw new Error("Function not implemented.");
 }
